@@ -40,7 +40,7 @@ ${PROJECT_SOURCE_DIR}/../../libsurvive/redist
 )
 
 set(LIBS
-${PROJECT_SOURCE_DIR}/../../libsurvive/lib/libsurvive.so
+${PROJECT_SOURCE_DIR}/../../libsurvive/bin/libsurvive.so
 )
 
 # Node for vive tracker
