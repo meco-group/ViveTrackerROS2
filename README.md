@@ -9,7 +9,7 @@ cd ~/ViveTracker
 #### Compile libsurvive
 
 ```sh
-cd ~/ViveTrackerlibsurvive
+cd ~/ViveTracker/libsurvive
 sudo cp ./useful_files/81-vive.rules /etc/udev/rules.d/
 sudo udevadm control --reload-rules && udevadm trigger
 sudo apt-get install build-essential zlib1g-dev libx11-dev libusb-1.0-0-dev freeglut3-dev liblapacke-dev libopenblas-dev libatlas-base-dev cmake
@@ -24,7 +24,7 @@ Once Ubuntu has started and the dongle is connected, you need to assign the righ
 ```sh
 cd ~/ViveTracker
 source vive_tracker_ros/source_this.sh
-libsurvive/survive-cli
+libsurvive/bin/survive-cli
 ```
 
 Build vive_tracker_ros
