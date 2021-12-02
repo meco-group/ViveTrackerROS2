@@ -4,8 +4,8 @@
      Vive Tracker ROS Node
 
   </description>
-  <author>Abhijit Majumdar</author>
-  <maintainer email="abhijit.g.majumdar@gmail.com">Abhijit Majumdar</maintainer>
+  <author>Kevin Jordil</author>
+  <maintainer email="kevin.jordil@heig-vd.ch">Kevin Jordil</maintainer>
   <license>GPLv3</license>
   <depend package="roscpp"/>
   <depend package="rospy"/>
