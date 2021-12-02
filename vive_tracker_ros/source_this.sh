@@ -13,7 +13,10 @@ BASEDIR=$(dirname "$BASH_SOURCE")
 WORKDIR=`pwd`
 cd ${BASEDIR}
 VIVEDIR=`pwd`
-if [ -z `env | grep ROS_PACKAGE_PATH | grep ${VIVEDIR}` ]; then
+#if [ -z `env | grep ROS_PACKAGE_PATH | grep ${VIVEDIR}` ]; then
+  echo "Export ROS_PACKAGE_PATH=${ROS_PACKAGE_PATH}:${VIVEDIR}"
   export ROS_PACKAGE_PATH=${ROS_PACKAGE_PATH}:${VIVEDIR}
-fi
+#fi
+echo "Export ROS_NAMESPACE=${VIVEDIR}"
+export ROS_NAMESPACE=${VIVEDIR}
 cd ${WORKDIR}
