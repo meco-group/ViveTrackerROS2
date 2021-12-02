@@ -20,7 +20,7 @@ geometry_msgs::TransformStamped transformStamped_lh_tracker;
 ros::Publisher pose_publisher;
 ros::Publisher lighthouse_initial_pose_publisher;
 
-void tracker_pose_process(SurviveObject *so, uint32_t timecode, SurvivePose *pose)
+void tracker_pose_process(SurviveObject *so, survive_long_timecode timecode, const SurvivePose *pose)
 {
   survive_default_pose_process(so, timecode, pose);
   //survive_default_raw_pose_process(so, timecode, pose);
@@ -32,7 +32,7 @@ void tracker_pose_process(SurviveObject *so, uint32_t timecode, SurvivePose *pos
   tracker_pose.pose.orientation.y = pose->Rot[1];
   tracker_pose.pose.orientation.z = pose->Rot[2];
   tracker_pose.pose.orientation.w = pose->Rot[3];
-  printf("Pose: [%u][%s][% 02.2f,% 02.2f,% 02.2f] [% 02.2f,% 02.2f,% 02.2f,% 02.2f]\n", timecode, so->codename, pose->Pos[0], pose->Pos[1], pose->Pos[2], pose->Rot[0], pose->Rot[1], pose->Rot[2], pose->Rot[3]);
+  printf("Pose: [%lu][%s][% 02.2f,% 02.2f,% 02.2f] [% 02.2f,% 02.2f,% 02.2f,% 02.2f]\n", timecode, so->codename, pose->Pos[0], pose->Pos[1], pose->Pos[2], pose->Rot[0], pose->Rot[1], pose->Rot[2], pose->Rot[3]);
 }
 
 /*
