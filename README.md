@@ -46,7 +46,7 @@ Once Ubuntu has started and the dongle is connected, you need to assign the righ
 ```sh
 cd ~/ViveTracker
 source vive_tracker_ros/source_this.sh
-libsurvive/bin/survive-cli
+libsurvive/bin/survive-cli --center-on-lh0 --force-calibrate
 ```
 
 Build vive_tracker_ros
