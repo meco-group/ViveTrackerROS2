@@ -116,7 +116,7 @@ int main(int argc, char **argv)
   //transformStamped_world_lh.child_frame_id = nspace + "_lighthouse_frame";
 
   // Initialize Tracker
-  char *av[] = {"pgm_name", "--configfile", const_cast<char *>(config_file.c_str()), const_cast<char *>("--no-calibrate"), NULL};
+  char *av[] = {"pgm_name", "--configfile", const_cast<char *>(config_file.c_str()), "--no-calibrate", NULL};
   int ac = sizeof(av) / sizeof(char *) - 1;
   ctx = survive_init(ac, av);
   if ((!ctx))
