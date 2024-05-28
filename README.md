@@ -5,7 +5,7 @@
 
 ## Clone the repositories
 ```sh
-git clone --recurse-submodules https://github.com/KevinJordil/ViveTracker.git ~/ViveTracker
+git clone --recurse-submodules https://github.com/meco-group/ViveTrackerROS2.git ~/ViveTracker
 cd ~/ViveTracker
 ```
 ## Compile libsurvive
