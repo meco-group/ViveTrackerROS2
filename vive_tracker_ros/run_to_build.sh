@@ -6,6 +6,6 @@ if [ ! -d "${BASEDIR}/vive_tracker_ros_package/build" ]; then
   mkdir ${BASEDIR}/vive_tracker_ros_package/build
 fi
 cd ${BASEDIR}/vive_tracker_ros_package/build
-cmake .. -DROS_BUILD_TYPE=Release
+cmake .. -DROS_BUILD_TYPE=Release -Wno-dev
 make
 echo "Build complete"

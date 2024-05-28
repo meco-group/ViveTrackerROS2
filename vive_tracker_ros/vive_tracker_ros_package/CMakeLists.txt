@@ -32,11 +32,23 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DUSE_DOUBLE")
 
 LIST(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/../../../cmake_modules)
 
+# Find CasADi
+set(CASADI_DIR "/usr/local")
+set(CMAKE_PREFIX_PATH ${CASADI_DIR} ${CMAKE_PREFIX_PATH})
+set(PKG_CONFIG_PATH ${CASADI_DIR}/lib/pkgconfig ${PKG_CONFIG_PATH})
+find_package(PkgConfig REQUIRED)
+pkg_search_module(CASADI casadi REQUIRED)
+pkg_search_module(IPOPT ipopt REQUIRED)
+
+link_directories(${CASADI_LIBRARY_DIRS})
+
+
 include_directories(
 ${PROJECT_SOURCE_DIR}
 ${PROJECT_SOURCE_DIR}/include
 ${PROJECT_SOURCE_DIR}/../../libsurvive/include/libsurvive
 ${PROJECT_SOURCE_DIR}/../../libsurvive/redist
+${CASADI_INCLUDEDIR}
 )
 
 set(LIBS
@@ -49,4 +61,6 @@ src/vive_tracker_node.cpp
 )
 target_link_libraries(vive_tracker_ros_node
 ${LIBS}
+${CASADI_LIBRARIES}
+ipopt
 )
