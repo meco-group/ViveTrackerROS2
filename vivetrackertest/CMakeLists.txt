@@ -63,8 +63,8 @@ find_package(PkgConfig REQUIRED)
 pkg_search_module(IPOPT ipopt REQUIRED)
 
 include_directories(
-  ${CASADI_INCLUDE_DIRS}         # For CasADi
-  ${CASADI_INCLUDE_DIRS}/include # For IPOPT
+  # ${CASADI_INCLUDE_DIRS}         # For CasADi
+  # ${CASADI_INCLUDE_DIRS}/include # For IPOPT
   ${CMAKE_SOURCE_DIR}/../libsurvive/include/libsurvive
   ${CMAKE_SOURCE_DIR}/../libsurvive/redist
 )
@@ -73,10 +73,10 @@ add_executable(vive_tracker_node src/vive_tracker_node.cpp)
 ament_target_dependencies(vive_tracker_node 
   rclcpp
   tf2
-  ${CASADI_LIBRARIES}
+  # ${CASADI_LIBRARIES}
 )
 target_link_libraries(vive_tracker_node 
-  ${IPOPT_LIBRARIES}
+  # ${IPOPT_LIBRARIES}
   ${CMAKE_SOURCE_DIR}/../libsurvive/bin/libsurvive.so
 )
 
@@ -89,6 +89,13 @@ target_include_directories(vive_tracker_node PUBLIC
 
 install(TARGETS vive_tracker_node
   DESTINATION lib/${PROJECT_NAME})
+
+install(FILES
+  ${CMAKE_SOURCE_DIR}/../libsurvive/bin/libsurvive.so.0
+  ${CMAKE_SOURCE_DIR}/../libsurvive/bin/libsurvive.so.0.3
+  ${CMAKE_SOURCE_DIR}/../libsurvive/bin/libsurvive.so
+  DESTINATION lib)
+
 
 
 
