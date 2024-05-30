@@ -4,7 +4,7 @@
 
 Install transforms3d using
 ```sh
-pip install transforms3d
+pip install transforms3d casadi
 ```
 
 ## Pysurvive
