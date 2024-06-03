@@ -6,6 +6,7 @@ import numpy as np
 import pysurvive
 import sys
 import casadi as cs
+from math import pi
 
 class ViveTrackerNode(Node):
     def __init__(self):
@@ -13,7 +14,7 @@ class ViveTrackerNode(Node):
         self.actx = pysurvive.SimpleContext(sys.argv)
         self.publisher = self.create_publisher(PoseStamped, '/vive/pose', 10)
 
-        self.pose_publisher = self.create_publisher(PoseStamped, 'pose', 10)
+        # self.pose_publisher = self.create_publisher(PoseStamped, 'pose', 10)
         self.done_00 = False
         self.done_200000 = False
         self.done_000200 = False
@@ -35,10 +36,10 @@ class ViveTrackerNode(Node):
         self.tracker_pose_world = PoseStamped()
 
         self.tracker_pose_vive.header.frame_id = 'vive'
-        self.tracker_pose_world.header.frame_id = 'map'
+        self.tracker_pose_world.header.frame_id = 'odom'
 
         self.transform_w_in_v.header.frame_id = 'vive'
-        self.transform_w_in_v.child_frame_id = 'map'
+        self.transform_w_in_v.child_frame_id = 'odom'
 
         self.calibration_ok = False
         self.counter = 0
@@ -53,6 +54,25 @@ class ViveTrackerNode(Node):
         # self.timer = self.create_timer(0.1, self.timer_callback)
         self.timer_callback()
 
+    def load_calibration_matrix(self, yaml_file):
+
+        with open(yaml_file, 'r') as file:
+            lines = file.readlines()
+
+            T_calibration = np.zeros((4,4))
+            for i in range(4):
+                line = lines[i+1]
+                line = line.replace('[', '')
+                line = line.replace(']', '')
+                line = line.replace(',', '')
+                line = line.split()
+                line.pop(0)
+                print(line)
+                for j in range(4):
+                    T_calibration[i, j] = float(line[j])
+
+        return T_calibration
+
     def handle_measurement(self, updated):
 
         poseObj = updated.Pose()
@@ -64,7 +84,7 @@ class ViveTrackerNode(Node):
 
             if not self.wait_set00 and self.counter == 200:
                 if not self.set_next_turn:
-                    input("Place at x:-0.255, y:-0.255 and z:0 and press enter")
+                    input("Place at x:-1, y:-1 and z:0 and press enter")
                     self.set_next_turn = True
                     self.counter = 0
                 else:
@@ -153,11 +173,16 @@ class ViveTrackerNode(Node):
                         cs.vertcat(self.tracker_pose_0_200_0.pose.position.x, self.tracker_pose_0_200_0.pose.position.y, self.tracker_pose_0_200_0.pose.position.z),
                         cs.vertcat(self.tracker_pose_200_0_0.pose.position.x, self.tracker_pose_200_0_0.pose.position.y, self.tracker_pose_200_0_0.pose.position.z),
                         cs.vertcat(self.tracker_pose_point_4.pose.position.x, self.tracker_pose_point_4.pose.position.y, self.tracker_pose_point_4.pose.position.z))
+                    # ground_truth_points = cs.horzcat(
+                    #     cs.vertcat(-0.255,-0.255,0),
+                    #     cs.vertcat(2.15,0.0,0),
+                    #     cs.vertcat(2.15,3.555,0),
+                    #     cs.vertcat(0.0,3.555,0))
                     ground_truth_points = cs.horzcat(
-                        cs.vertcat(-0.255,-0.255,0),
-                        cs.vertcat(2.15,0.0,0),
-                        cs.vertcat(2.15,3.555,0),
-                        cs.vertcat(0.0,3.555,0))
+                        cs.vertcat(-1,-1,0),
+                        cs.vertcat(2,0.0,0),
+                        cs.vertcat(2,4,0),
+                        cs.vertcat(0,3,0))
                     
                     opti = cs.Opti()
 
@@ -182,6 +207,7 @@ class ViveTrackerNode(Node):
                         cs.horzcat(sy*cp, sy*sp*sr + cy*cr, sy*sp*cr - cy*sr),
                         cs.horzcat(-sp, cp*sr, cp*cr)
                     )
+
 
                     T = cs.vertcat(
                         cs.horzcat(R, t),
@@ -239,25 +265,26 @@ class ViveTrackerNode(Node):
                         for i in range(4):
                             file.write(f"  - [{T_calibration[i,0]}, {T_calibration[i,1]}, {T_calibration[i,2]}, {T_calibration[i,3]}]\n")
                     
-                    self.get_logger().info("Calibration matrix saved to calibration_matrix.yaml")
+                    self.T_calibration = self.load_calibration_matrix('calibration_matrix.yaml')
+                    # rotation_quat = t3d.quaternions.mat2quat(Rsol)
 
-                    rotation_quat = t3d.quaternions.mat2quat(Rsol)
+                    # self.get_logger().info("Calibration matrix saved to calibration_matrix.yaml")
 
-                    self.calibration_pose.pose.position.x = tsol[0]
-                    self.calibration_pose.pose.position.y = tsol[1]
-                    self.calibration_pose.pose.position.z = tsol[2]
-                    self.calibration_pose.pose.orientation.x = rotation_quat[0]
-                    self.calibration_pose.pose.orientation.y = rotation_quat[1]
-                    self.calibration_pose.pose.orientation.z = rotation_quat[2]
-                    self.calibration_pose.pose.orientation.w = rotation_quat[3]
+                    # self.calibration_pose.pose.position.x = tsol[0]
+                    # self.calibration_pose.pose.position.y = tsol[1]
+                    # self.calibration_pose.pose.position.z = tsol[2]
+                    # self.calibration_pose.pose.orientation.x = rotation_quat[0]
+                    # self.calibration_pose.pose.orientation.y = rotation_quat[1]
+                    # self.calibration_pose.pose.orientation.z = rotation_quat[2]
+                    # self.calibration_pose.pose.orientation.w = rotation_quat[3]
 
-                    self.transform_w_in_v.transform.translation.x = tsol[0]
-                    self.transform_w_in_v.transform.translation.y = tsol[1]
-                    self.transform_w_in_v.transform.translation.z = tsol[2]
-                    self.transform_w_in_v.transform.rotation.x = rotation_quat[0]
-                    self.transform_w_in_v.transform.rotation.y = rotation_quat[1]
-                    self.transform_w_in_v.transform.rotation.z = rotation_quat[2]
-                    self.transform_w_in_v.transform.rotation.w = rotation_quat[3]
+                    # self.transform_w_in_v.transform.translation.x = tsol[0]
+                    # self.transform_w_in_v.transform.translation.y = tsol[1]
+                    # self.transform_w_in_v.transform.translation.z = tsol[2]
+                    # self.transform_w_in_v.transform.rotation.x = rotation_quat[0]
+                    # self.transform_w_in_v.transform.rotation.y = rotation_quat[1]
+                    # self.transform_w_in_v.transform.rotation.z = rotation_quat[2]
+                    # self.transform_w_in_v.transform.rotation.w = rotation_quat[3]
 
                     self.calibration_ok = True
                     
@@ -265,57 +292,7 @@ class ViveTrackerNode(Node):
 
         else:
             if self.T_calibration is None:
-
-                # load calibration matrix from yaml file
-                with open('calibration_matrix.yaml', 'r') as file:
-                    lines = file.readlines()
-                    # print(lines)
-                    T_calibration = np.zeros((4,4))
-                    for i in range(4):
-                        line = lines[i+1]
-                        line = line.replace('-', '')
-                        line = line.replace('[', '')
-                        line = line.replace(']', '')
-                        line = line.replace(',', '')
-                        line = line.split()
-                        print(line)
-                        for j in range(4):
-                            T_calibration[i, j] = float(line[j])
-
-                self.T_calibration = T_calibration
-
-                # self.get_logger().error("Calibration matrix is not set. TODO.")
-                # exit()
-            # self.T_calibration = np.array([
-            #     [0.211650, -0.977305, -0.008950, 0.035416],
-            #     [0.977041, 0.211804, -0.023006, 0.005643],
-            #     [0.024379, -0.003876, 0.999695, 0.244721],
-            #     [0.000000, 0.000000, 0.000000, 1.00000]
-            # ])
-
-            # R_sol = np.array([
-            #     [0.211650, -0.977305, -0.008950],
-            #     [0.977041, 0.211804, -0.023006],
-            #     [0.024379, -0.003876, 0.999695]
-            # ])
-
-            # rotation_quat = t3d.quaternions.mat2quat(R_sol)
-
-            # self.calibration_pose.pose.position.x = 0.035416
-            # self.calibration_pose.pose.position.y = 0.005643
-            # self.calibration_pose.pose.position.z = 0.244721
-            # self.calibration_pose.pose.orientation.x = rotation_quat[0]
-            # self.calibration_pose.pose.orientation.y = rotation_quat[1]
-            # self.calibration_pose.pose.orientation.z = rotation_quat[2]
-            # self.calibration_pose.pose.orientation.w = rotation_quat[3]
-
-            # self.transform_w_in_v.transform.translation.x = 0.035416
-            # self.transform_w_in_v.transform.translation.y = 0.005643
-            # self.transform_w_in_v.transform.translation.z = 0.244721
-            # self.transform_w_in_v.transform.rotation.x = rotation_quat[0]
-            # self.transform_w_in_v.transform.rotation.y = rotation_quat[1]
-            # self.transform_w_in_v.transform.rotation.z = rotation_quat[2]
-            # self.transform_w_in_v.transform.rotation.w = rotation_quat[3]
+                self.T_calibration = self.load_calibration_matrix('calibration_matrix.yaml')
 
             self.tracker_pose_vive.header.stamp = self.get_clock().now().to_msg()
             self.tracker_pose_vive.header.frame_id = 'map'  # or whatever frame you're using
@@ -368,7 +345,7 @@ class ViveTrackerNode(Node):
 
                     self.get_logger().info(f"Position tracker:\t Roll: {(roll_world*180/(3.141592))}, Pitch: {(pitch_world*180/(3.141592))}, Yaw: {(yaw_world*180/(3.141592))}")
 
-                    new_quat = t3d.euler.euler2quat(0, 0, -roll_world)
+                    new_quat = t3d.euler.euler2quat(yaw_world + 0.5*pi, 0, 0)
 
                     self.tracker_pose_world.header.stamp = self.get_clock().now().to_msg()
                     self.tracker_pose_world.pose.position.x = pose_tracker_world[0, 3]
