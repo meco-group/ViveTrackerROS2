@@ -104,7 +104,7 @@ class ViveTrackerNode(Node):
             
             elif not self.wait_set000200 and self.counter == 200:
                 if not self.set_next_turn:
-                    input("Place at x:2.15, y:0.0 and z:000 and press enter")
+                    input("Place at x:2, y:0.0 and z:000 and press enter")
                     self.set_next_turn = True
                     self.counter = 0
                 else:
@@ -124,7 +124,7 @@ class ViveTrackerNode(Node):
             
             elif not self.wait_set200000 and self.counter == 200:
                 if not self.set_next_turn:
-                    input("Place at x:2.15, y: 3.555, and z:000 and press enter")
+                    input("Place at x:2, y: 4, and z:000 and press enter")
                     self.set_next_turn = True
                     self.counter = 0
                 else:
@@ -144,7 +144,7 @@ class ViveTrackerNode(Node):
 
             elif not self.wait_point_4 and self.counter == 200:
                 if not self.set_next_turn:
-                    input("Place at x:0, y: 3.555, and z:000 and press enter")
+                    input("Place at x:0, y: 3, and z:000 and press enter")
                     self.set_next_turn = True
                     self.counter = 0
                 else:
@@ -183,6 +183,11 @@ class ViveTrackerNode(Node):
                         cs.vertcat(2,0.0,0),
                         cs.vertcat(2,4,0),
                         cs.vertcat(0,3,0))
+                    # ground_truth_points = cs.horzcat(
+                    #     cs.vertcat(-1,-1,0),
+                    #     cs.vertcat(2,-1,0),
+                    #     cs.vertcat(2,4,0),
+                    #     cs.vertcat(0,5,0))
                     
                     opti = cs.Opti()
 

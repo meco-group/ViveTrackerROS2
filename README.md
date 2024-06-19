@@ -32,7 +32,7 @@ libsurvive/bin/survive-cli --center-on-lh0 --force-calibrate
 Build vive_tracker_ros
 ```sh
 cd ~/ViveTracker
-./vive_tracker_ros/run_to_build.sh
+colcon build --packages-ignore libsurvive
 ```
 
 ## Running the package
